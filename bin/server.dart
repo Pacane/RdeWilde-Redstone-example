@@ -1,12 +1,17 @@
-// Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
-// is governed by a BSD-style license that can be found in the LICENSE file.
+import 'package:redstone/redstone.dart';
+import 'package:redstone/redstone.dart' as app;
+import 'package:redstone_mapper/plugin.dart';
+import 'package:redstone_mapper_mongo/manager.dart';
+import 'package:server_shelf/app.dart';
 
-import 'package:shelf/shelf_io.dart' as io;
-import 'package:shelf_static/shelf_static.dart';
+main() {
+  var dbManager = new MongoDbManager("mongodb://localhost/myapp", poolSize: 3);
 
-void main(List<String> args) {
-  var handler = createStaticHandler('example/files',
-      defaultDocument: 'index.html');
+  app.addPlugin(getMapperPlugin(dbManager));
 
-  io.serve(handler, '0.0.0.0', 8080);
+  app.setupConsoleLog();
+
+  app.start();
 }
+
+MongoDb get mongoDb => app.request.attributes.dbConn;
